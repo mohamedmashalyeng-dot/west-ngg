@@ -23,8 +23,8 @@ function hero() {
     <div class="container hero__inner">
       <div class="hero__content">
         <p class="eyebrow">نبيل غبريال جروب · WEST NGG</p>
-        <h1 id="hero-title">مستقبل الغرب</h1>
-        <p class="hero__lead">نطوّر وننفّذ مشروعات عقارية في غرب القاهرة، من اختيار الموقع حتى التسليم.</p>
+        <h1 id="hero-title">نطوّر وننفّذ مشروعات عقارية في غرب القاهرة</h1>
+        <p class="hero__lead">من اختيار الموقع حتى التسليم، بفريق واحد للتطوير والإنشاءات.</p>
         <p class="hero__text">نجمع التطوير العقاري، والإنشاءات، وإدارة التنفيذ في مجموعة واحدة، ونعمل في حدائق الأهرام و6 أكتوبر والدقي.</p>
         <div class="btn-row">
           ${button('استكشف مشروعاتنا', '#projects', { variant: 'gold' })}
