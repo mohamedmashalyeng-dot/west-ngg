@@ -1,0 +1,16 @@
+{
+  "name": "westngg-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WEST NGG / Nabil Ghabrial Group — Arabic RTL company website (static build).",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "dev": "node scripts/build.mjs && node scripts/serve.mjs",
+    "serve": "node scripts/serve.mjs"
+  }
+}
