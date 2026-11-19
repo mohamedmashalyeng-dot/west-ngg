@@ -22,7 +22,22 @@ const assets = join(root, 'src', 'assets');
 // Turn a URL path into its output file (Arabic slugs stay as UTF-8 folder names).
 const outFile = (path) => (path.endsWith('.html') ? join(dist, path) : join(dist, path, 'index.html'));
 
+// Optional sub-path for preview hosting (e.g. BASE=/west-ngg for GitHub Pages).
+// Preview builds are also marked noindex so they never compete with westngg.com.
+const BASE = (process.env.BASE || '').replace(/\/+$/, '');
+function withBase(htmlText) {
+  if (!BASE) return htmlText;
+  return htmlText
+    .replace(/(\s(?:href|src|action)=")\/(?!\/)/g, `$1${BASE}/`)
+    .replace(/(\ssrcset=")([^"]*)"/g, (_, a, list) => `${a}${list.replace(/(^|,\s*)\/(?!\/)/g, `$1${BASE}/`)}"`)
+    .replace(/(url=)\/(?!\/)/g, `$1${BASE}/`)
+    // The contact endpoint only exists on westngg.com; off-origin, the form shows the phone/WhatsApp fallback.
+    .replace('"endpoint":"/wp-admin/', '"endpoint":"https://westngg.com/wp-admin/')
+    .replace('<meta charset="utf-8">', '<meta charset="utf-8">\n  <meta name="robots" content="noindex">');
+}
+
 async function write(path, content) {
+  content = withBase(content);
   const file = outFile(path);
   await mkdir(dirname(file), { recursive: true });
   await writeFile(file, content, 'utf8');
@@ -56,7 +71,7 @@ async function main() {
   }
   await writeFile(
     join(dist, 'robots.txt'),
-    'User-agent: *\nAllow: /\nSitemap: https://westngg.com/sitemap.xml\n',
+    BASE ? 'User-agent: *\nDisallow: /\n' : 'User-agent: *\nAllow: /\nSitemap: https://westngg.com/sitemap.xml\n',
     'utf8',
   );
   const urls = pages.filter((p) => !p.noindex).map((p) => `  <url><loc>https://westngg.com${encodeURI(p.path)}</loc></url>`);

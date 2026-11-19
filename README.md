@@ -71,7 +71,15 @@ The form reuses the existing WordPress plugin endpoint: `POST /wp-admin/admin-aj
 
 ## Deploying
 
-Nothing has been deployed. `dist/` is a self-contained static site. Options:
+### Preview on GitHub Pages
+
+`.github/workflows/pages.yml` builds the site on every push to `main` and publishes it to `https://mohamedmashalyeng-dot.github.io/west-ngg/`. One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
+The preview build runs with `BASE=/west-ngg`, which prefixes every internal link, marks all pages `noindex` and blocks crawlers in `robots.txt`. The contact form cannot send from the preview (its endpoint lives on westngg.com), so it shows the phone/WhatsApp fallback instead. To test a preview build locally: `BASE=/west-ngg node scripts/build.mjs`.
+
+### Production (westngg.com)
+
+`dist/` (built without `BASE`) is a self-contained static site. Options:
 
 1. Serve `dist/` as the public site on westngg.com and keep WordPress running for `/wp-admin/` (the contact endpoint). The web server must serve the static files first and pass only `/wp-admin/` and `/wp-json/` to WordPress.
 2. Or rebuild these templates as a WordPress theme, using `dist/` as the reference markup and `main.css`/`main.js` as-is.
