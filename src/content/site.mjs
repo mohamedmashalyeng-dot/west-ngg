@@ -3,13 +3,11 @@
 export const site = {
   name: 'WEST NGG',
   groupAr: 'نبيل غبريال جروب',
-  groupEn: 'Nabil Ghabrial Group',
+  groupEn: 'Nabil Ghobrial Group',
   url: 'https://westngg.com',
   lang: 'ar',
-  motto: 'نبني. نطوّر. نسلّم.',
-  slogan: 'The Future of WEST',
   summary:
-    'WEST NGG هي الذراع العقارية لنبيل غبريال جروب. نطوّر وننفّذ مشروعات تجارية وسكنية في غرب القاهرة، من اختيار الموقع حتى التسليم.',
+    'في WEST Development، ننطلق من خبرة تتجاوز 20 عامًا في مجال الإنشاءات، لنقدم رؤية متكاملة للتطوير العقاري، تجمع بين المعرفة الفنية وفهم احتياجات السوق العقاري.',
   credit: { label: 'Orvann', url: 'http://orvann.com' },
 };
 
@@ -33,22 +31,28 @@ export const routes = {
   home: '/',
   about: '/من-نحن/',
   projects: '/مشاريعنا/',
+  mall: '/projects/',
+  westen: '/غرب-الجامعة/',
+  previous: '/أعمالنا-السابقة/',
   investment: '/الأسئلة-والاستثمار/',
   contact: '/تواصل-معنا/',
 };
 
-// Old links that 404 on the live site; the build writes redirects for them.
+// Old links; the build writes small redirect pages for them.
 export const redirects = {
   '/about/': routes.about,
   '/investment-faq/': routes.investment,
-  '/projects/meeting-point-mall/': '/projects/',
+  '/projects/meeting-point-mall/': routes.mall,
+  '/الكرمة/': `${routes.previous}#al-karma`,
+  '/grand-hights/': `${routes.previous}#grand-heights`,
+  '/جازل/': `${routes.previous}#jazel`,
 };
 
 export const nav = [
   { key: 'home', label: 'الرئيسية', href: routes.home },
-  { key: 'about', label: 'من نحن', href: routes.about },
-  { key: 'projects', label: 'مشروعاتنا', href: routes.projects, dropdown: true },
-  { key: 'investment', label: 'الاستثمار والأسئلة', href: routes.investment },
+  { key: 'about', label: 'قصتنا', href: routes.about },
+  { key: 'projects', label: 'مشاريعنا', href: routes.projects, dropdown: true },
+  { key: 'investment', label: 'الأسئلة والاستثمار', href: routes.investment },
   { key: 'contact', label: 'تواصل معنا', href: routes.contact },
 ];
 

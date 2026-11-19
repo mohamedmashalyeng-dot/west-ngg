@@ -1,6 +1,6 @@
 # WEST NGG website
 
-Arabic (RTL) company site for WEST NGG / Nabil Ghabrial Group. Pages are generated into plain static HTML by a small Node script. The site has no runtime framework and no npm dependencies.
+Arabic (RTL) company site for WEST NGG / Nabil Ghobrial Group. Pages are generated into plain static HTML by a small Node script. The site has no runtime framework and no npm dependencies.
 
 ## Commands
 
@@ -18,9 +18,9 @@ Requires Node 18 or newer.
 ```
 src/content/      All text and facts (edit these to change copy)
   site.mjs        Contact details, navigation, routes, form settings and messages
-  company.mjs     Group, companies, story, mission/vision/values, expertise, process, West Cairo
-  projects.mjs    One entry per project; templates skip fields that are missing
-  investment.mjs  Investor guide, buying steps and all FAQs
+  company.mjs     Stats, founder, story, companies, principles, vision/mission/values
+  projects.mjs    Meeting Point Mall, WESTEN, previous works, areas, projects menu
+  investment.mjs  FAQ topics (one page each) and project examples
 src/pages/        One builder per page type (home, about, projects, project, investment, contact, 404)
 src/components/   Shared pieces: layout (head/header/footer), UI blocks, page sections, icons
 src/assets/       main.css, main.js, images (WebP photos + brand PNGs + manifest.json)
@@ -31,8 +31,8 @@ scripts/          build, serve, check, optimize_image.py
 
 - **Text:** change the strings in `src/content/*.mjs`, then run `npm run build`.
 - **A project field you don't have yet** (status, delivery date, payment plan, and so on): leave it out. Templates only render fields that exist.
-- **A new project:** add an object to `projects` in `projects.mjs` with a unique `slug` and `path`. It then appears automatically in the menu, the projects page, the comparison table, the footer and the sitemap.
-- **New FAQ:** add `{ q, a }` to a group in `investment.mjs`. Add `home: true` to also show it on the homepage.
+- **A previous project:** add an object to `previous` in `projects.mjs`; it appears on the previous-works page and projects page.
+- **New FAQ:** add `{ q, a }` to a topic in `investment.mjs` (`a` can be a string or a list of paragraphs).
 
 ### Adding a photo
 
@@ -45,19 +45,21 @@ This writes WebP copies to `src/assets/img/photos/` and registers `karma-7` in `
 
 ## Routes
 
-Live URLs from westngg.com are kept as they are:
-
 | Path | Page |
 | --- | --- |
 | `/` | Home |
-| `/من-نحن/` | About |
-| `/مشاريعنا/` | All projects (previously an older draft of the Meeting Point Mall page) |
-| `/projects/` | Meeting Point Mall |
-| `/غرب-الجامعة/`, `/الكرمة/`, `/grand-hights/`, `/جازل/` | Project pages |
-| `/الأسئلة-والاستثمار/` | Investment guide and FAQ |
+| `/من-نحن/` | قصتنا (our story) |
+| `/مشاريعنا/` | All projects |
+| `/projects/` | Meeting Point Mall landing page |
+| `/غرب-الجامعة/` | WESTEN – غرب الجامعة / أكتوبر بارك |
+| `/أعمالنا-السابقة/` | Previous works: Grand Heights, Al Karma, Jazel |
+| `/الأسئلة-والاستثمار/` | FAQ & investment: six topics |
+| `/الأسئلة-والاستثمار/<topic>/` | One page per FAQ topic (accordion) |
 | `/تواصل-معنا/` | Contact |
 
-The live homepage links to `/about/`, `/investment-faq/` and `/projects/meeting-point-mall/`, which return 404 there. The build writes small redirect pages for those three paths.
+The old project pages `/الكرمة/`, `/grand-hights/` and `/جازل/` redirect to their card on `/أعمالنا-السابقة/` (the card opens automatically). `/about/`, `/investment-faq/` and `/projects/meeting-point-mall/` also redirect.
+
+Map embeds use Google Maps search queries set in `projects.mjs` (`mapQuery`, `mapCenter`, and per-place `q`). Replace them with exact pins when available.
 
 ## Contact form
 

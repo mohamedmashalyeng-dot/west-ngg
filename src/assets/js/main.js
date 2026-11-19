@@ -184,7 +184,7 @@
   function initReveal() {
     if (reduceMotion || !('IntersectionObserver' in window)) return;
     var targets = document.querySelectorAll(
-      'main .section-head, .xp-card, .project-card, .area-card, .pillar, .panel, .mv-card, .org-card, .reason-grid li, .timeline__item, .building, .faq-group'
+      'main .section-head, .big-card, .area-tile, .topic-card, .principle, .mv-card, .co-card, .value-card, .feature-card, .loc-group, .icon-tile, .unit-card, .prev-tile, .work-card, .example'
     );
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
@@ -421,6 +421,83 @@
     });
   }
 
+  /* ---------- Map explorer (WESTEN destinations) ----------
+     Without JS each place is a plain Google Maps link. */
+  function initMapExplorer() {
+    each(document.querySelectorAll('[data-map-explorer]'), function (root) {
+      var frame = root.querySelector('[data-map-frame]');
+      var label = root.querySelector('[data-map-label]');
+      var reset = root.querySelector('[data-map-reset]');
+      var places = root.querySelectorAll('.dest-place');
+      if (!frame) return;
+      var initialLabel = label ? label.innerHTML : '';
+      function embed(q) {
+        return 'https://maps.google.com/maps?q=' + encodeURIComponent(q) + '&z=14&hl=ar&output=embed';
+      }
+      each(places, function (a) {
+        a.setAttribute('role', 'button');
+        a.setAttribute('aria-pressed', 'false');
+        a.removeAttribute('target');
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          each(places, function (o) { o.setAttribute('aria-pressed', String(o === a)); });
+          frame.src = embed(a.getAttribute('data-map-q'));
+          if (label) {
+            label.textContent = 'يعرض الآن: ';
+            var strong = document.createElement('strong');
+            strong.textContent = a.textContent.trim();
+            label.appendChild(strong);
+          }
+          if (reset) reset.hidden = false;
+          if (window.matchMedia('(max-width: 1080px)').matches) {
+            frame.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+          }
+        });
+        a.addEventListener('keydown', function (e) {
+          if (e.key === ' ') { e.preventDefault(); a.click(); }
+        });
+      });
+      if (reset) {
+        reset.addEventListener('click', function () {
+          each(places, function (o) { o.setAttribute('aria-pressed', 'false'); });
+          frame.src = embed(reset.getAttribute('data-map-q'));
+          if (label) label.innerHTML = initialLabel;
+          reset.hidden = true;
+        });
+      }
+    });
+  }
+
+  /* ---------- "Show project details" toggles (previous works) ---------- */
+  function initMore() {
+    var blocks = document.querySelectorAll('[data-more]');
+    each(blocks, function (block) {
+      var toggle = block.querySelector('.more__toggle');
+      var label = block.querySelector('[data-more-label]');
+      if (!toggle) return;
+      toggle.hidden = false;
+      function setOpen(open) {
+        block.classList.toggle('is-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        if (label) label.textContent = open ? 'إخفاء التفاصيل' : 'عرض تفاصيل المشروع';
+      }
+      toggle.addEventListener('click', function () {
+        setOpen(!block.classList.contains('is-open'));
+      });
+      block.__setOpen = setOpen;
+    });
+    // Opening /أعمالنا-السابقة/#slug expands that project.
+    function openFromHash() {
+      if (!location.hash) return;
+      var target;
+      try { target = document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch (e) { return; }
+      var block = target && target.querySelector('[data-more]');
+      if (block && block.__setOpen) block.__setOpen(true);
+    }
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+  }
+
   function start() {
     initHeader();
     initDropdowns();
@@ -429,6 +506,8 @@
     initLightbox();
     initQuickContact();
     initEnquiryForm();
+    initMapExplorer();
+    initMore();
     initReveal();
   }
 

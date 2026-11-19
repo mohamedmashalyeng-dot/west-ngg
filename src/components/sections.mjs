@@ -1,7 +1,7 @@
 import { html } from '../lib/html.mjs';
-import { picture, sectionHead, chips, breadcrumbs, textLink } from './ui.mjs';
+import { picture, sectionHead, breadcrumbs } from './ui.mjs';
+import { icon } from './icons.mjs';
 import { mission, vision, values } from '../content/company.mjs';
-import { routes, site } from '../content/site.mjs';
 
 // Inner-page hero: image on the side on desktop, stacked on mobile.
 export function pageHero({ eyebrow, title, titleEn, lead, crumbs, image, imageAlt = '', imageNote, actions, aside }) {
@@ -25,29 +25,38 @@ export function pageHero({ eyebrow, title, titleEn, lead, crumbs, image, imageAl
   </section>`;
 }
 
-export function missionBand({ id = 'mv-title' } = {}) {
+export function visionBand({ id = 'mv-title' } = {}) {
+  const card = (c) => html`<article class="mv-card">
+    <p class="mv-card__en" lang="en" dir="ltr">${c.titleEn}</p>
+    <h3>${c.title}</h3>
+    <p>${c.text}</p>
+  </article>`;
   return html`<section class="section section--navy theme-dark" aria-labelledby="${id}">
     <div class="container">
-      ${sectionHead({ eyebrow: 'ما نؤمن به', title: 'رسالتنا ورؤيتنا وقيمنا', id })}
-      <div class="mv-grid">
-        <article class="mv-card"><h3>${mission.title}</h3><p>${mission.text}</p></article>
-        <article class="mv-card"><h3>${vision.title}</h3><p>${vision.text}</p></article>
-        <article class="mv-card mv-card--values"><h3>قيمنا</h3>${chips(values, 'chips--light')}</article>
-      </div>
+      <h2 class="sr-only" id="${id}">رؤيتنا ورسالتنا</h2>
+      <div class="mv-grid">${card(vision)}${card(mission)}</div>
     </div>
   </section>`;
 }
 
-// Shared closing note on project pages, from the "من البناء إلى التطوير" block.
-export function developerNote() {
-  return html`<section class="section section--sand section--tight" aria-labelledby="dev-note-title">
-    <div class="container dev-note">
-      <div>
-        <p class="eyebrow">من البناء إلى التطوير</p>
-        <h2 id="dev-note-title">${site.motto}</h2>
-      </div>
-      <p>بدأت WEST بالبناء والتنفيذ عبر WEST Construction. ومع الخبرة وفهم السوق، انتقلنا إلى تطوير المشروعات عبر WEST Development: من فهم المكان واختيار الموقع والتخطيط، حتى التنفيذ والتسليم.</p>
-      ${textLink('تعرّف على قصة المجموعة', routes.about)}
+export function valuesSection({ id = 'values-title' } = {}) {
+  return html`<section class="section section--paper" aria-labelledby="${id}">
+    <div class="container">
+      ${sectionHead({ eyebrow: values.titleEn, title: values.title, id })}
+      <ul class="values-grid">
+        ${values.items.map(
+          (v, i) => html`<li class="value-card">
+            <span class="value-card__icon">${icon(v.icon, { size: 26 })}</span>
+            <span class="value-card__num">${String(i + 1).padStart(2, '0')}</span>
+            <h3>${v.title}</h3>
+            <p>${v.text}</p>
+          </li>`,
+        )}
+      </ul>
     </div>
   </section>`;
 }
+
+// Animated "scroll on" cue linking to the next section.
+export const scrollCue = (target, label) =>
+  html`<a class="scroll-cue" href="#${target}"><span>${label}</span><span class="scroll-cue__arrow">${icon('down', { size: 22 })}</span></a>`;

@@ -8,7 +8,7 @@ export function notFound() {
     active: '',
     noindex: true,
     title: 'الصفحة غير موجودة',
-    description: 'لم نجد الصفحة التي تبحث عنها. انتقل إلى الصفحة الرئيسية أو تصفّح مشروعاتنا.',
+    description: 'لم نجد الصفحة التي تبحث عنها. انتقل إلى الصفحة الرئيسية أو تصفّح مشاريعنا.',
     body: html`<section class="section section--paper not-found" aria-labelledby="nf-title">
       <div class="container">
         <p class="eyebrow">خطأ 404</p>
@@ -16,7 +16,7 @@ export function notFound() {
         <p class="lead">ربما تغيّر الرابط أو حُذفت الصفحة. جرّب إحدى هذه الصفحات:</p>
         <div class="btn-row">
           ${button('الصفحة الرئيسية', '/', { variant: 'dark' })}
-          ${button('مشروعاتنا', routes.projects, { variant: 'outline' })}
+          ${button('مشاريعنا', routes.projects, { variant: 'outline' })}
           ${button('تواصل معنا', routes.contact, { variant: 'outline' })}
         </div>
       </div>

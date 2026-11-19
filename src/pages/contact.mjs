@@ -40,11 +40,11 @@ export function contactPage() {
     <div class="container visit">
       <div>
         <h2 id="before-title">تريد أن تقرأ أولًا؟</h2>
-        <p>تصفّح مشروعاتنا، أو اقرأ إجابات أهم أسئلة المستثمرين.</p>
+        <p>تصفّح مشاريعنا، أو اقرأ إجابات أهم الأسئلة حول الاستثمار والسوق العقاري.</p>
       </div>
       <div class="btn-row">
         ${button('تصفّح المشروعات', routes.projects, { variant: 'outline' })}
-        ${button('الأسئلة الشائعة', `${routes.investment}#faq`, { variant: 'outline' })}
+        ${button('الأسئلة الشائعة', `${routes.investment}#topics`, { variant: 'outline' })}
       </div>
     </div>
   </section>`;

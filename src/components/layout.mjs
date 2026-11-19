@@ -2,7 +2,7 @@ import { html, raw, href, ltr } from '../lib/html.mjs';
 import { icon } from './icons.mjs';
 import { logo } from './ui.mjs';
 import { site, contact, nav, routes, whatsappLink } from '../content/site.mjs';
-import { projects } from '../content/projects.mjs';
+import { projectMenu } from '../content/projects.mjs';
 
 const canonical = (path) => site.url + encodeURI(path);
 
@@ -50,14 +50,14 @@ function head({ title, description, path, assetVersion, image, noindex }) {
 function projectsDropdown() {
   return html`<div class="dropdown" id="projects-menu" data-dropdown-panel>
     <ul class="dropdown__list">
-      ${projects.map(
-        (p) => html`<li><a href="${href(p.path)}">
+      ${projectMenu.map(
+        (p) => html`<li><a href="${href(p.href)}">
           <span class="dropdown__name">${p.name}</span>
-          <span class="dropdown__meta">${p.type} · ${p.area}</span>
+          <span class="dropdown__meta">${p.meta}</span>
         </a></li>`,
       )}
     </ul>
-    <a class="dropdown__all" href="${href(routes.projects)}"><span>كل المشروعات في صفحة واحدة</span>${icon('arrow', { size: 18 })}</a>
+    <a class="dropdown__all" href="${href(routes.projects)}"><span>كل المشاريع</span>${icon('arrow', { size: 18 })}</a>
   </div>`;
 }
 
@@ -67,7 +67,7 @@ function header(active) {
   return html`<a class="skip-link" href="#main">انتقل إلى المحتوى</a>
 <div class="topbar theme-dark">
   <div class="container topbar__inner">
-    <p class="topbar__note">${site.groupAr} · مشروعات تجارية وسكنية في غرب القاهرة</p>
+    <p class="topbar__note"><span lang="en" dir="ltr">West Development</span> · ${site.groupAr}</p>
     <ul class="topbar__links">
       <li><a href="${contact.mapHref}" target="_blank" rel="noopener">${icon('pin', { size: 16 })}<span>${contact.addressShort}</span></a></li>
       <li><a href="${contact.phoneHref}">${icon('phone', { size: 16 })}${ltr(contact.phoneDisplay)}</a></li>
@@ -85,7 +85,7 @@ function header(active) {
             ? html`<li class="has-dropdown" data-dropdown>
                 <a href="${href(n.href)}"${current(n.key)}>${n.label}</a>
                 <button class="dropdown-toggle" type="button" aria-expanded="false" aria-controls="projects-menu">
-                  ${icon('chevron', { size: 16 })}<span class="sr-only">اعرض قائمة المشروعات</span>
+                  ${icon('chevron', { size: 16 })}<span class="sr-only">اعرض قائمة المشاريع</span>
                 </button>
                 ${projectsDropdown()}
               </li>`
@@ -111,7 +111,7 @@ function header(active) {
           (n) => html`<li>
             <a href="${href(n.href)}"${current(n.key)}>${n.label}</a>
             ${n.dropdown
-              ? html`<ul class="mobile-menu__sub">${projects.map((p) => html`<li><a href="${href(p.path)}">${p.name}<span>${p.area}</span></a></li>`)}</ul>`
+              ? html`<ul class="mobile-menu__sub">${projectMenu.map((p) => html`<li><a href="${href(p.href)}">${p.name}</a></li>`)}</ul>`
               : ''}
           </li>`,
         )}
@@ -131,17 +131,16 @@ function footer() {
     <div class="site-footer__brand">
       ${logo('ngg-logo-ar', 'white', { alt: 'نبيل غبريال جروب', height: 64 })}
       <p>${site.summary}</p>
-      <p class="motto">${site.motto}</p>
     </div>
     <nav class="site-footer__col" aria-labelledby="ft-company">
       <h2 id="ft-company">الشركة</h2>
       <ul>${nav.filter((n) => n.key !== 'projects').map((n) => html`<li><a href="${href(n.href)}">${n.label}</a></li>`)}</ul>
     </nav>
     <nav class="site-footer__col" aria-labelledby="ft-projects">
-      <h2 id="ft-projects">مشروعاتنا</h2>
+      <h2 id="ft-projects">مشاريعنا</h2>
       <ul>
-        ${projects.map((p) => html`<li><a href="${href(p.path)}">${p.name}</a></li>`)}
-        <li><a href="${href(routes.projects)}">كل المشروعات</a></li>
+        ${projectMenu.map((p) => html`<li><a href="${href(p.href)}">${p.name}</a></li>`)}
+        <li><a href="${href(routes.projects)}">كل المشاريع</a></li>
       </ul>
     </nav>
     <div class="site-footer__col">

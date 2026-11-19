@@ -8,11 +8,11 @@ import { fileURLToPath } from 'node:url';
 import { page } from '../src/components/layout.mjs';
 import { home } from '../src/pages/home.mjs';
 import { about } from '../src/pages/about.mjs';
-import { projectsIndex, projectPage } from '../src/pages/projects.mjs';
-import { investment } from '../src/pages/investment.mjs';
+import { projectsIndex, mallPage, westenPage, previousPage } from '../src/pages/projects.mjs';
+import { investment, topicPage } from '../src/pages/investment.mjs';
 import { contactPage } from '../src/pages/contact.mjs';
 import { notFound, redirectPage } from '../src/pages/not-found.mjs';
-import { projects } from '../src/content/projects.mjs';
+import { faqTopics } from '../src/content/investment.mjs';
 import { redirects } from '../src/content/site.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -44,7 +44,10 @@ async function main() {
   hash.update(await readFile(join(assets, 'js', 'main.js')));
   const assetVersion = hash.digest('hex').slice(0, 10);
 
-  const pages = [home(), about(), projectsIndex(), ...projects.map(projectPage), investment(), contactPage(), notFound()];
+  const pages = [
+    home(), about(), projectsIndex(), mallPage(), westenPage(), previousPage(),
+    investment(), ...faqTopics.map(topicPage), contactPage(), notFound(),
+  ];
   for (const p of pages) {
     await write(p.path, page({ ...p, body: String(p.body), assetVersion }));
   }

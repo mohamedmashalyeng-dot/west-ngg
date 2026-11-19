@@ -1,97 +1,127 @@
-import { html } from '../lib/html.mjs';
+import { html, href } from '../lib/html.mjs';
 import { icon } from '../components/icons.mjs';
-import { picture, sectionHead, paragraphs, button, chips, accordion, ctaBand } from '../components/ui.mjs';
+import { picture, sectionHead, button, accordion, ctaBand } from '../components/ui.mjs';
 import { pageHero } from '../components/sections.mjs';
 import { routes } from '../content/site.mjs';
-import { reasons, westCairo } from '../content/company.mjs';
-import { investIntro, strengths, journey, faqGroups } from '../content/investment.mjs';
+import { faqIntro, faqTopics, projectLinks } from '../content/investment.mjs';
+import { projectBySlug } from '../content/projects.mjs';
 
-const num = (i) => String(i + 1).padStart(2, '0');
+const pad = (n) => String(n).padStart(2, '0');
+const total = faqTopics.reduce((n, t) => n + t.items.length, 0);
+
+function topicGrid() {
+  return html`<ul class="topic-grid">
+    ${faqTopics.map(
+      (t) => html`<li><a class="topic-card" href="${href(t.path)}">
+        <span class="topic-card__icon">${icon(t.icon, { size: 24 })}</span>
+        <span class="topic-card__num">${pad(t.number)}</span>
+        <span class="topic-card__title">${t.title}</span>
+        <span class="topic-card__text">${t.text}</span>
+        <span class="topic-card__more">${t.items.length} أسئلة ${icon('arrow', { size: 16 })}</span>
+      </a></li>`,
+    )}
+  </ul>`;
+}
+
+function projectExample(slug) {
+  const p = projectBySlug[slug];
+  return html`<li><a class="example" href="${href(p.path)}">
+    ${picture(p.cover, { alt: '', sizes: '120px' })}
+    <span class="example__text">
+      <strong>${p.nameEn ? html`<span lang="en" dir="ltr">${p.nameEn}</span>` : html`<span lang="en" dir="ltr">${p.name}</span>`}</strong>
+      <span>${projectLinks[slug]}</span>
+    </span>
+  </a></li>`;
+}
 
 export function investment() {
   const body = html`
   ${pageHero({
-    crumbs: [{ label: 'الرئيسية', href: '/' }, { label: 'الاستثمار والأسئلة' }],
-    eyebrow: 'الاستثمار والأسئلة الشائعة',
-    title: investIntro.title,
-    lead: investIntro.lead,
-    image: 'giza-pyramids-view',
-    imageAlt: 'إطلالة على أهرامات الجيزة من غرب القاهرة',
-    actions: html`${button('اقرأ الأسئلة الشائعة', '#faq', { variant: 'gold' })}${button('تحدّث مع فريق المبيعات', routes.contact, { variant: 'outline-light' })}`,
-    aside: html`<ol class="approach">${investIntro.approach.map((a, i) => html`<li><span>${i + 1}</span>${a}</li>`)}</ol>`,
+    crumbs: [{ label: 'الرئيسية', href: '/' }, { label: 'الأسئلة والاستثمار' }],
+    eyebrow: faqIntro.eyebrow,
+    title: faqIntro.pageTitle,
+    lead: faqIntro.text,
+    image: 'karma-3',
+    imageAlt: 'إحدى عمارات الكرمة في حدائق الأهرام',
+    aside: html`<p class="hero-count"><strong>${total}</strong> سؤالًا في <strong>${faqTopics.length}</strong> محاور</p>`,
   })}
 
-  <section class="section section--paper" aria-labelledby="why-invest">
+  <section class="section section--paper" id="topics" aria-labelledby="topics-title">
     <div class="container">
-      ${sectionHead({ eyebrow: 'لماذا تستثمر مع WEST؟', title: 'مطوّر يخطط ويبني ويتابع مشروعه حتى التسليم', lead: 'أربعة أسباب تساعدك على اتخاذ قرارك.', id: 'why-invest' })}
-      <ul class="reason-grid">
-        ${reasons.map((r, i) => html`<li><span class="reason-grid__num">${num(i)}</span><h3>${r.title}</h3><p>${r.text}</p></li>`)}
-      </ul>
+      ${sectionHead({ eyebrow: faqIntro.title, title: 'اختر المحور الذي يهمك', lead: 'لكل محور صفحة مستقلة فيها تعريف قصير وأسئلة يمكنك فتحها وإغلاقها.', id: 'topics-title' })}
+      ${topicGrid()}
     </div>
   </section>
 
-  <section class="section section--sand" aria-labelledby="wc-invest">
-    <div class="container split">
-      <div class="split__text">
-        <p class="eyebrow">افهم المكان</p>
-        <h2 id="wc-invest">${westCairo.title}</h2>
-        ${paragraphs(westCairo.text)}
-        ${chips(westCairo.keywords)}
-      </div>
-      <figure class="split__media">
-        ${picture('karma-3', { alt: 'إحدى عمارات الكرمة في حدائق الأهرام', sizes: '(min-width: 900px) 45vw, 100vw' })}
-        <figcaption>كرمة 3، حدائق الأهرام</figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section class="section section--navy theme-dark" aria-labelledby="strengths-title">
+  <section class="section section--mist" aria-labelledby="examples-title">
     <div class="container">
-      ${sectionHead({ eyebrow: 'قيّم الفرصة', title: strengths.title, lead: strengths.text, id: 'strengths-title' })}
-      <ul class="strength-grid">
-        ${strengths.items.map((s) => html`<li>${icon('check', { size: 20 })}<span>${s}</span></li>`)}
-      </ul>
+      ${sectionHead({
+        eyebrow: 'أمثلة تطبيقية',
+        title: 'مشروعات WEST NGG داخل الإجابات',
+        lead: 'لا نذكر المشروعات لمجرد الترويج، بل نستخدمها كأمثلة تطبيقية توضح الإجابات.',
+        id: 'examples-title',
+      })}
+      <ul class="examples">${Object.keys(projectLinks).map(projectExample)}</ul>
     </div>
   </section>
 
-  <section class="section section--paper" aria-labelledby="journey-title">
-    <div class="container">
-      ${sectionHead({ eyebrow: 'رحلة المستثمر', title: journey.title, lead: journey.text, id: 'journey-title' })}
-      <ol class="steps">
-        ${journey.steps.map((s, i) => html`<li class="step"><span class="step__num">${i + 1}</span><h3>${s.title}</h3><p>${s.text}</p></li>`)}
-      </ol>
-    </div>
-  </section>
-
-  <section class="section section--mist" id="faq" aria-labelledby="faq-title">
-    <div class="container faq-page">
-      <aside class="faq-page__nav">
-        <h2 id="faq-title">الأسئلة الشائعة</h2>
-        <p>إجابات واضحة عن الاستثمار، والموقع، والشراء والتعاقد، وطريقة عمل WEST.</p>
-        <nav aria-label="أقسام الأسئلة">
-          <ul>${faqGroups.map((g) => html`<li><a href="#faq-${g.id}">${g.title}<span>${g.items.length}</span></a></li>`)}</ul>
-        </nav>
-      </aside>
-      <div class="faq-page__groups">
-        ${faqGroups.map(
-          (g) => html`<section class="faq-group" id="faq-${g.id}" aria-labelledby="faq-${g.id}-title">
-            <h3 id="faq-${g.id}-title">${g.title}</h3>
-            ${accordion(g.items)}
-          </section>`,
-        )}
-        <p class="note">هذه إجابات عامة لمساعدتك على الفهم، وليست وعدًا بعائد محدد. للتفاصيل الخاصة بأي مشروع، تحدّث مع فريق المبيعات.</p>
-      </div>
-    </div>
-  </section>
-
-  ${ctaBand({ title: 'عندك سؤال لم تجد إجابته هنا؟', text: 'فريق المبيعات جاهز للرد على أسئلتك عن الاستثمار في غرب القاهرة.' })}`;
+  ${ctaBand({ title: 'عندك سؤال لم تجد إجابته هنا؟', text: 'فريق المبيعات جاهز للرد على أسئلتك عن الأسعار وأنظمة السداد ومواعيد التسليم لكل مشروع.' })}`;
 
   return {
     path: routes.investment,
     active: 'investment',
-    title: 'الاستثمار والأسئلة الشائعة: دليل شراء وحدتك في غرب القاهرة',
+    title: 'الأسئلة الشائعة حول الاستثمار والسوق العقاري',
     description:
-      'لماذا غرب القاهرة؟ وكيف تشتري وحدتك خطوة بخطوة؟ إجابات واضحة من WEST NGG عن الاستثمار والموقع والشراء والتعاقد.',
+      'إجابات واضحة عن الاستثمار العقاري في 6 محاور: فهم السوق، اختيار الموقع، أنواع العقارات، التطوير وجودة التنفيذ، WEST NGG ومشروعاتها، والشراء والتملك.',
+    body,
+  };
+}
+
+export function topicPage(t) {
+  const i = faqTopics.indexOf(t);
+  const prev = faqTopics[i - 1];
+  const next = faqTopics[i + 1];
+  const body = html`
+  ${pageHero({
+    crumbs: [{ label: 'الرئيسية', href: '/' }, { label: 'الأسئلة والاستثمار', href: routes.investment }, { label: t.title }],
+    eyebrow: `المحور ${pad(t.number)} من ${pad(faqTopics.length)}`,
+    title: t.title,
+    lead: t.text,
+  })}
+
+  <section class="section section--paper" aria-labelledby="q-title">
+    <div class="container faq-page">
+      <aside class="faq-page__nav">
+        <h2 class="faq-page__heading">المحاور</h2>
+        <nav aria-label="محاور الأسئلة">
+          <ul>${faqTopics.map(
+            (o) => html`<li><a href="${href(o.path)}"${o === t ? html` aria-current="page"` : ''}><span class="faq-page__n">${pad(o.number)}</span><span>${o.title}</span></a></li>`,
+          )}</ul>
+        </nav>
+      </aside>
+      <div class="faq-page__main">
+        <h2 id="q-title" class="faq-page__title">${icon(t.icon, { size: 26 })}<span>أسئلة ${t.title}</span></h2>
+        ${accordion(t.items, { numbered: true, open: 0 })}
+        <div class="topic-examples">
+          <h3>أمثلة من مشروعاتنا</h3>
+          <ul class="examples examples--compact">${t.projects.map(projectExample)}</ul>
+        </div>
+        <nav class="pager" aria-label="المحور السابق والتالي">
+          ${prev ? html`<a class="pager__link" href="${href(prev.path)}"><span>المحور السابق</span><strong>${prev.title}</strong></a>` : html`<span></span>`}
+          ${next ? html`<a class="pager__link pager__link--next" href="${href(next.path)}"><span>المحور التالي</span><strong>${next.title}</strong></a>` : button('كل المحاور', routes.investment, { variant: 'outline' })}
+        </nav>
+        <p class="note">هذه إجابات عامة لمساعدتك على الفهم واتخاذ قرار مدروس. للتفاصيل المحدثة الخاصة بأي مشروع، تحدّث مع فريق المبيعات.</p>
+      </div>
+    </div>
+  </section>
+
+  ${ctaBand({ title: 'تحتاج إجابة خاصة بمشروع معين؟', text: 'تواصل مع فريق المبيعات للحصول على التفاصيل المحدثة بشأن الأسعار وأنظمة السداد ومواعيد التسليم.' })}`;
+
+  return {
+    path: t.path,
+    active: 'investment',
+    title: `${t.title} | الأسئلة الشائعة`,
+    description: `${t.text} ${t.items.length} أسئلة وإجابات من WEST NGG: ${t.items.map((q) => q.q).slice(0, 2).join(' ')}`,
     body,
   };
 }

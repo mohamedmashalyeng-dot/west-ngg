@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { html, raw, href, ltr } from '../lib/html.mjs';
 import { icon } from './icons.mjs';
 import { contact, contactForm, routes, whatsappLink } from '../content/site.mjs';
-import { projects } from '../content/projects.mjs';
+import { allProjects } from '../content/projects.mjs';
 
 const manifest = JSON.parse(
   readFileSync(new URL('../assets/img/manifest.json', import.meta.url), 'utf8'),
@@ -106,12 +106,12 @@ export const collapseOnMobile = (summary, body, cls = '') => html`<details class
   ${body}
 </details>`;
 
-export function accordion(items, { cls = '' } = {}) {
+export function accordion(items, { cls = '', numbered = false, open = -1 } = {}) {
   return html`<div class="accordion ${cls}">
     ${items.map(
-      (item) => html`<details class="accordion-item">
-        <summary><span class="accordion-q">${item.q}</span><span class="accordion-sign" aria-hidden="true"></span></summary>
-        <div class="accordion-a"><p>${item.a}</p></div>
+      (item, i) => html`<details class="accordion-item"${i === open ? raw(' open') : ''}>
+        <summary>${numbered ? html`<span class="accordion-num">${String(i + 1).padStart(2, '0')}</span>` : ''}<span class="accordion-q">${item.q}</span><span class="accordion-sign" aria-hidden="true"></span></summary>
+        <div class="accordion-a">${paragraphs([].concat(item.a))}</div>
       </details>`,
     )}
   </div>`;
@@ -119,34 +119,30 @@ export function accordion(items, { cls = '' } = {}) {
 
 /* ---------- Projects ---------- */
 
-export function projectMeta(p) {
-  return html`<ul class="project-meta">
-    <li>${icon('pin', { size: 17 })}<span>${p.area}، ${p.city}</span></li>
-    <li>${icon('building', { size: 17 })}<span>${p.type}</span></li>
-    ${p.keyFact ? html`<li>${icon('ruler', { size: 17 })}<span>${p.keyFact}</span></li>` : ''}
-  </ul>`;
-}
+export const nameEn = (text) => html`<span class="name-en" lang="en" dir="ltr">${text}</span>`;
 
-export function projectName(p, tag = 'h3') {
-  return raw(
-    `<${tag} class="project-name">${html`${p.name}${p.nameEn ? html` <span class="name-en" lang="en" dir="ltr">${p.nameEn}</span>` : ''}`}</${tag}>`,
-  );
-}
-
-export function projectCard(p, { variant = 'compact', sizes } = {}) {
-  return html`<article class="project-card project-card--${variant}">
-    <a class="project-card__media" href="${href(p.path)}" tabindex="-1" aria-hidden="true">
-      ${picture(p.cover, { alt: '', sizes: sizes || (variant === 'feature' ? '(min-width: 900px) 58vw, 100vw' : '(min-width: 900px) 24vw, 100vw') })}
+// Large card for a current project (homepage and projects page).
+export function bigProjectCard(p, { headingTag = 'h3' } = {}) {
+  const title = p.nameEn
+    ? html`${p.name} ${nameEn(p.nameEn)}`
+    : html`<span lang="en" dir="ltr">${p.name}</span><span class="big-card__sub">${p.nameAr}</span>`;
+  return html`<article class="big-card">
+    <a class="big-card__media" href="${href(p.path)}" tabindex="-1" aria-hidden="true">
+      ${picture(p.cover, { alt: '', sizes: '(min-width: 900px) 50vw, 100vw' })}
       ${p.coverNote ? html`<span class="media-note">${p.coverNote}</span>` : ''}
     </a>
-    <div class="project-card__body">
-      ${p.badge ? html`<p class="badge">${p.badge}</p>` : ''}
-      ${projectName(p)}
-      ${projectMeta(p)}
-      <p class="project-card__summary">${p.summary}</p>
-      <a class="text-link" href="${href(p.path)}"><span>تفاصيل ${p.name}</span>${icon('arrow', { size: 18 })}</a>
+    <div class="big-card__body">
+      <ul class="tag-row"><li>${icon('pin', { size: 15 })}${p.area}، ${p.city}</li><li>${icon('building', { size: 15 })}${p.type}</li></ul>
+      ${raw(`<${headingTag} class="big-card__title">${title}</${headingTag}>`)}
+      <p class="big-card__lead">${p.card.lead}</p>
+      ${p.card.text ? html`<p class="big-card__text">${p.card.text}</p>` : ''}
+      <a class="btn btn-dark big-card__cta" href="${href(p.path)}"><span>${p.card.cta}</span>${icon('arrow', { size: 18 })}</a>
     </div>
   </article>`;
+}
+
+export function iconTile(item, { cls = '' } = {}) {
+  return html`<li class="icon-tile ${cls}"><span class="icon-tile__icon">${icon(item.icon, { size: 24 })}</span><p>${item.text}</p></li>`;
 }
 
 export const contactHref = (p) => `${routes.contact}?project=${p.slug}#enquiry`;
@@ -174,7 +170,7 @@ export function contactChannels({ cls = '' } = {}) {
   </ul>`;
 }
 
-export function ctaBand({ title, text, project } = {}) {
+export function ctaBand({ title, text, project, primary } = {}) {
   const waText = project ? `مرحبًا، أريد معرفة المزيد عن ${project.name}.` : undefined;
   return html`<section class="cta-band theme-dark" aria-labelledby="cta-title">
     <div class="container cta-band__inner">
@@ -183,7 +179,9 @@ export function ctaBand({ title, text, project } = {}) {
         <p>${text}</p>
       </div>
       <div class="btn-row">
-        ${button('أرسل استفسارك', project ? contactHref(project) : `${routes.contact}#enquiry`, { variant: 'gold' })}
+        ${primary
+          ? button(primary.label, primary.href, { variant: 'gold', iconName: 'arrow', cls: 'btn-icon-end' })
+          : button('أرسل استفسارك', project ? contactHref(project) : `${routes.contact}#enquiry`, { variant: 'gold' })}
         ${button('راسلنا على واتساب', whatsappLink(waText), { variant: 'outline-light', iconName: 'whatsapp', external: true })}
         ${button(contact.phoneDisplay, contact.phoneHref, { variant: 'outline-light', iconName: 'phone', cls: 'btn-ltr' })}
       </div>
@@ -198,7 +196,7 @@ export function enquiryForm({ heading = 'أرسل استفسارك', headingId =
     initAction: contactForm.initAction,
     sendAction: contactForm.sendAction,
     messages: m,
-    projects: Object.fromEntries(projects.map((p) => [p.slug, p.name])),
+    projects: Object.fromEntries(allProjects.map((p) => [p.slug, p.name])),
   };
   const field = (id, label, control, { optional = false, hint } = {}) => html`<div class="field" data-field="${id}">
       <label for="f-${id}">${label}${optional ? html` <span class="optional">(اختياري)</span>` : html` <span class="req" aria-hidden="true">*</span>`}</label>
